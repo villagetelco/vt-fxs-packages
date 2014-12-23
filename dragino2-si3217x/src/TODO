@@ -1,0 +1,12 @@
+--done-- Add LICENSE file with GPLv2 text
+--not done. strange things happen-- Add hardware gain
+--not done. worthless if I'm not sure the Gigaset will support it-- Add neon vmwi
+--done-- add those damn tabs to dfxs ioctl :P
+--done-- Add myself as mantainer of dahdilinux, dahditools and dragino2-si3217x
+Properly handle proslicapi debugging with global debug flag
+--done, needs testing-- Add uci config for the debug and opermode params in the initscript
+--done, needs testing-- Add stop and restart support to the init script
+--done-- Fix spaces to tabs in tdm and maybe other files too
+--almost done, needs testing-- (Re-)add code to support AA with 3.3.8 kernel
+Check compatibility with latest trunk
+Upstream everything!
