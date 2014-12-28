@@ -103,8 +103,12 @@ static int __init si3217x_init(void)
 		_opermode = 0;
 	else if (!strcmp(opermode, "TBR21"))
 		_opermode = 1;
+	else if (!strcmp(opermode, "TN12"))
+		_opermode = 2;
+	else if (!strcmp(opermode, "BT3"))
+		_opermode = 3;
 	else {
-		printk(KERN_ERR PFX "Error: The opermode parameter should be one of: FCC, TBR21\n");
+		printk(KERN_ERR PFX "Error: The opermode parameter should be one of: FCC, TBR21, TN12, BT3\n");
 		return -ENODEV;
 	}
 

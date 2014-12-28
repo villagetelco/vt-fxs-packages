@@ -6,6 +6,7 @@ START=42
 start() {
 	local debug="$(uci_get dragino2-si3217x.@fxs[0].debug)"
 	local opermode="$(uci_get dragino2-si3217x.@fxs[0].opermode)"
+	local echocan="$(uci_get dragino2-si3217x.@fxs[0].echocan)"
 	local tonezone="$(uci_get dragino2-si3217x.@fxs[0].tonezone)"
 	local signalling="$(uci_get dragino2-si3217x.@fxs[0].signalling)"
 	local txgain="$(uci_get dragino2-si3217x.@fxs[0].txgain)"
@@ -13,7 +14,10 @@ start() {
 	local rxflash="$(uci_get dragino2-si3217x.@fxs[0].rxflash)"
 	local immediate="$(uci_get dragino2-si3217x.@fxs[0].immediate)"
 	local mailbox="$(uci_get dragino2-si3217x.@fxs[0].mailbox)"
+	local mwi="$(uci_get dragino2-si3217x.@fxs[0].mwi)"
+	local mwicfg=""
 	local mailboxcfg=""
+	local echocancfg=""
 
 	# fixes for Attitude Adjustment that does not support AutoProbe
 	lsmod | grep -q 'dragino2_si3217x_proslic_api ' || insmod dragino2_si3217x_proslic_api
@@ -25,10 +29,12 @@ start() {
 
 	insmod dragino2_si3217x debug="${debug:-0}" opermode="${opermode:-FCC}"
 
-	[ -n "$mailbox" ] && mailboxcfg="mwisendtype=rpas,lrev
+	[ "$mwi" != "0" ] && mwicfg="mwisendtype=rpas,lrev"
+	[ -n "$mailbox" ] && mailboxcfg="${mwicfg}
 mailbox=${mailbox}
 mwi_mailboxes=${mailbox}
 "
+	[ "$echocan" != "0" ] && echocancfg="echocanceller = oslec,1"
 
 	cat > /tmp/dragino2-si3217x-asterisk-chan-dahdi.conf << EOF
 ; In order to make use of this file in Asterisk, please replace the
@@ -81,7 +87,7 @@ defaultzone = ${tonezone:-us}
 fxo${signalling:-ks} = 1
 mulaw = 1
 
-echocanceller = oslec,1
+$echocancfg
 EOF
 
 	dahdi_cfg -c /tmp/dragino2-si3217x-dahdi.conf -vvvv
