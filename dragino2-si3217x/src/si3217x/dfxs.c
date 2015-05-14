@@ -117,14 +117,18 @@ static DECLARE_DELAYED_WORK(work_reset_oht, work_reset_oht_handler);
 
 static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long data)
 {
+	int i;
+	u32 temp;
+	struct dfxs_stats stats;
+	struct dfxs_mem mem;
+	struct dfxs_regop regop;
+	struct dfxs_ramop ramop;
+
 	if (!wc.initialized)
 		return -ENODEV;
 
 	switch (cmd) {
 		case DAHDI_ONHOOKTRANSFER:
-		{
-			int i;
-
 			if (get_user(i, (__user int *) data))
 				return -EFAULT;
 
@@ -147,20 +151,15 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 			schedule_delayed_work(&work_reset_oht, msecs_to_jiffies(i)); /* use ohttimer to reset it after i milliseconds */
 
 			break;
-		}
 
 		case DAHDI_VMWI_CONFIG:
-		{
 			if (copy_from_user(&(wc.vmwisetting), (__user void *) data, sizeof(wc.vmwisetting)))
 				return -EFAULT;
 			printk_dbg(PFX "ioctl DAHDI_VMWI_CONFIG, vmwi_type = %u\n", wc.vmwisetting.vmwi_type);
 			schedule_work(&work_set_hook_status);
 			break;
-		}
 
 		case DAHDI_VMWI:
-		{
-			int i;
 			if (get_user(i, (__user int *) data))
 				return -EFAULT;
 			if (i < 0)
@@ -169,36 +168,24 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 			wc.vmwi_message_count = i;
 			schedule_work(&work_set_hook_status);
 			break;
-		}
 
 		case DAHDI_SET_HWGAIN:
-		{
 			printk_dbg(PFX "ioctl DAHDI_SET_HWGAIN, not supported\n");
 			return -ENOSYS;
-		}
 
 		case DAHDI_TONEDETECT:
-		{
 			printk_dbg(PFX "ioctl DAHDI_TONEDETECT, not supported\n");
 			return -ENOSYS;
-		}
 
 		case DAHDI_SETPOLARITY:
-		{
-			int i;
 			if (get_user(i, (__user int *) data))
 				return -EFAULT;
 			printk_dbg(PFX "ioctl DAHDI_SETPOLARITY, status = %d\n", i);
 			wc.reverse_linefeed_polarity = i ? 1 : 0;
 			schedule_work(&work_set_hook_status);
 			break;
-		}
 
 		case DFXS_GET_STATS:
-		{
-			struct dfxs_stats stats;
-			u32 temp;
-
 			printk_dbg(PFX "ioctl DFXS_GET_STATS\n");
 
 			si3217x_read_ram(SI3217X_MADC_VTIPC, &temp);
@@ -214,13 +201,8 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 				return -EFAULT;
 
 			break;
-		}
 
 		case DFXS_GET_REGS:
-		{
-			struct dfxs_mem mem;
-			int i;
-
 			printk_dbg(PFX "ioctl DFXS_GET_REGS\n");
 
 			for (i = 0; i < NUM_REGS; i++)
@@ -233,12 +215,8 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 				return -EFAULT;
 
 			break;
-		}
 
 		case DFXS_GET_REG:
-		{
-			struct dfxs_regop regop;
-
 			if (copy_from_user(&regop, (__user struct dfxs_regop *) data, sizeof(regop)))
 				return -EFAULT;
 
@@ -250,12 +228,8 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 				return -EFAULT;
 
 			break;
-		}
 
 		case DFXS_SET_REG:
-		{
-			struct dfxs_regop regop;
-
 			if (copy_from_user(&regop, (__user struct dfxs_regop *) data, sizeof(regop)))
 				return -EFAULT;
 
@@ -264,12 +238,8 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 			si3217x_write_reg(regop.address, regop.val);
 
 			break;
-		}
 
 		case DFXS_GET_RAM:
-		{
-			struct dfxs_ramop ramop;
-
 			if (copy_from_user(&ramop, (__user struct dfxs_ramop *) data, sizeof(ramop)))
 				return -EFAULT;
 
@@ -281,12 +251,8 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 				return -EFAULT;
 
 			break;
-		}
 
 		case DFXS_SET_RAM:
-		{
-			struct dfxs_ramop ramop;
-
 			if (copy_from_user(&ramop, (__user struct dfxs_ramop *) data, sizeof(ramop)))
 				return -EFAULT;
 
@@ -295,7 +261,6 @@ static int dfxs_ioctl(struct dahdi_chan *chan, unsigned int cmd, unsigned long d
 			si3217x_write_ram(ramop.address, ramop.val);
 
 			break;
-		}
 
 		default:
 			printk_dbg(PFX "ioctl %u not implemented\n", cmd);

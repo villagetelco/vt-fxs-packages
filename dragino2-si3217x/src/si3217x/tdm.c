@@ -98,7 +98,7 @@ static void init_slic(void)
 	AR9331_REG_WRITE(AR9331_RST_RESET, temp & ~AR9331_RST_RESET_SLIC);
 
 	/* One time slot */
-	/* AR9331_REG_WRITE(AR9331_SLIC_SLOT, 32); /* For 2.048Mhz system */
+	/* AR9331_REG_WRITE(AR9331_SLIC_SLOT, 32); */ /* For 2.048Mhz system */
 	AR9331_REG_WRITE(AR9331_SLIC_SLOT, 8); /* For 512Khz system */
 
 	/* 2.048 Mhz clock */
@@ -383,7 +383,7 @@ static void enable_slic(void)
 	AR9331_REG_WRITE(AR9331_SLIC_MBOX_DMA_RX_CONTROL, AR9331_SLIC_MBOX_DMA_START);
 	AR9331_REG_WRITE(AR9331_SLIC_MBOX_DMA_TX_CONTROL, AR9331_SLIC_MBOX_DMA_START);
 
-	/* printk_dbg(PFX "SLIC has been enabled\n"); /* This print stops the interrupts !!!!!!!!!!!!!!!!!!!!! */
+	/* printk_dbg(PFX "SLIC has been enabled\n"); */ /* This print stops the interrupts !!!!!!!!!!!!!!!!!!!!! */
 }
 
 static void disable_slic(void)
