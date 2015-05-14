@@ -155,7 +155,7 @@ static void init_slic(void)
 }
 
 /* init SLIC MBOX engine */
-static int init_slic_mbox(void)
+static int init_slic_mbox(struct spi_device *spidev)
 {
 	struct dma_pool *slic_descr_pool, *slic_buffer_pool;
 	dma_addr_t dma_ptr;
@@ -168,7 +168,7 @@ static int init_slic_mbox(void)
 	AR9331_REG_WRITE(AR9331_RST_RESET, temp & ~AR9331_RST_RESET_MBOX);
 
 	/* Create DMA pool for the MBOX 4-byte-aligned descriptors. */
-	slic_descr_pool = dma_pool_create("slic_descr_pool", NULL, sizeof(struct ar9331_slic_mbox_desc), 4, 0);
+	slic_descr_pool = dma_pool_create("slic_descr_pool", &spidev->dev, sizeof(struct ar9331_slic_mbox_desc), 4, 0);
 
 	/* Create two RX and two TX descriptors. Each will hold DAHDI_CHUNKSIZE bytes of data from/to the SLIC. */
 
@@ -221,7 +221,7 @@ static int init_slic_mbox(void)
 	 * The first half of the buffer will contain DAHDI_CHUNKSIZE bytes for the descr0
 	 * The second half of the buffer will contain DAHDI_CHUNKSIZE bytes for the descr1
 	 */
-	slic_buffer_pool = dma_pool_create("slic_buffer_pool", NULL, 2 * DAHDI_CHUNKSIZE, 1, 0);
+	slic_buffer_pool = dma_pool_create("slic_buffer_pool", &spidev->dev, 2 * DAHDI_CHUNKSIZE, 1, 0);
 
 	tdmdata.rx_data_0 = dma_pool_alloc(slic_buffer_pool, GFP_KERNEL, &dma_ptr);
 	tdmdata.rx_data_1 = tdmdata.rx_data_0 + DAHDI_CHUNKSIZE;
@@ -446,7 +446,7 @@ static const struct file_operations tdm_proc_ops = {
 #define proc_remove(proc_entry) remove_proc_entry((proc_entry)->name, NULL)
 #endif
 
-int __init si3217x_tdm_init(void)
+int si3217x_tdm_init(struct spi_device *spidev)
 {
 	int err;
 
@@ -460,7 +460,7 @@ int __init si3217x_tdm_init(void)
 
 	init_slic();
 
-	err = init_slic_mbox();
+	err = init_slic_mbox(spidev);
 	if (err) {
 		printk(KERN_ERR PFX "Failed to initialize SLIC MBOX engine\n");
 		free_irq(tdmdata.irq_mbox, &tdmdata);

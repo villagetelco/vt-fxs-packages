@@ -60,7 +60,7 @@ extern int si3217x_write_ram(u16 address, u32 val);
 extern int si3217x_reset(int state);
 
 /* tdm */
-extern int __init si3217x_tdm_init(void);
+extern int si3217x_tdm_init(struct spi_device *);
 extern void si3217x_tdm_exit(void);
 
 /* dfxs */

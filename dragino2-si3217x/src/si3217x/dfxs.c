@@ -360,6 +360,13 @@ static const struct dahdi_span_ops dfxs_span_ops = {
 
 static int dfxs_init_one(struct spi_device *spidev)
 {
+	printk_dbg(PFX "Initializing si3217x TDM driver...\n");
+
+	if (si3217x_tdm_init(spidev) < 0) {
+		printk(KERN_ERR PFX "Failed to initialize the si3217x TDM driver\n");
+		return -EIO;
+	}
+
 	printk_dbg(PFX "Initializing DAHDI driver...\n");
 
 	memset(&wc, 0, sizeof(struct dfxs));
@@ -427,6 +434,8 @@ static void dfxs_release(void)
 	dahdi_unregister_device(wc.ddev);
 
 	si3217x_proslic_free();
+
+	si3217x_tdm_exit();
 
 	printk(KERN_INFO PFX DEVICE_DESC " released successfully\n");
 }

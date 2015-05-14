@@ -114,16 +114,9 @@ static int __init si3217x_init(void)
 
 	printk_dbg(PFX "Selected operation mode %s\n", opermode);
 
-	error = si3217x_tdm_init();
-	if (error < 0) {
-		printk(KERN_ERR PFX "Failed to initialize the si3217x TDM driver\n");
-		return error;
-	}
-
 	error = si3217x_spi_platform_device_init();
 	if (error < 0) {
 		printk(KERN_ERR PFX "Failed to register the si3217x SPI platform device driver\n");
-		si3217x_tdm_exit();
 		return error;
 	}
 
@@ -132,7 +125,6 @@ static int __init si3217x_init(void)
 		printk(KERN_ERR PFX "Failed to register the si3217x SPI protocol driver\n");
 		si3217x_spi_platform_device_exit();
 		si3217x_proslic_free();
-		si3217x_tdm_exit();
 		return error;
 	}
 
@@ -149,8 +141,6 @@ static void __exit si3217x_exit(void)
 	si3217x_spi_platform_device_exit();
 
 	si3217x_proslic_free();
-
-	si3217x_tdm_exit();
 }
 
 module_init(si3217x_init);
