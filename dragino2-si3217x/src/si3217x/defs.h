@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013-2014 Village Telco Ltd.
  * Copyright (C) 2013-2014 Dimitar Penev <dpn at switchvoice dot com>
- * Copyright (C) 2014 Vittorio Gambaletta <openwrt@vittgam.net>
+ * Copyright (C) 2014-2015 Vittorio Gambaletta <openwrt@vittgam.net>
  *
  * This program is free software, distributed under the terms of
  * the GNU General Public License Version 2 as published by the
