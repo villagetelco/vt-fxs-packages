@@ -46,7 +46,7 @@ static int time_TimeElapsedWrapper(void *hTimer, void *startTime, int *timeInMs)
 	struct timespec now, time_diff;
 	UNREFERENCED_PARAMETER(hTimer);
 
-	do_posix_clock_monotonic_gettime(&now);
+	ktime_get_ts(&now);
 	time_diff=diff(&now, (struct timespec *)startTime);
 
 	*timeInMs = (int)((time_diff.tv_sec)*1000+(time_diff.tv_nsec)/1000);
@@ -59,7 +59,7 @@ static int time_GetTimeWrapper(void *hTimer, void *time)
 	struct timespec now, *time_ptr;
 	UNREFERENCED_PARAMETER(hTimer);
 
-	do_posix_clock_monotonic_gettime(&now);
+	ktime_get_ts(&now);
 
 	time_ptr = (struct timespec *)time;
 
